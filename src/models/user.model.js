@@ -9,68 +9,86 @@ const userSchema = new Schema(
             require: true,
             lowercase: true,
             unique: true,
+            trim: true,
+            index: true,
+            minlength: 3,
+            maxlength: 20
         },
         email: {
             type: String,
             require: true,
             lowercase: true,
             unique: true,
+            trim: true,
         },
         password: {
             type: String,
             require: true,
             minlength: 6,
             maxlength: 12,
-            
+            trim: true,
         },
         profileImage: {
             type: String,
             default: ""
         },
-        isEmailVarify:{
+        isEmailVarify: {
             type: Boolean,
             default: false
-        }
+        },
+        varificationToken: {
+            type: String,
+            length: 6
+        },
+        varificationTokenExpireAt: {
+            type: Date
+        },
+        refreshToken: {
+            type: String,
+        },
     },
     {
         timestamps: true
     });
 
-    userSchema.pre("save", async function (next) {
-        if(!this.isModified("password")) return next()
+// Password Encrypt or Bcrypt
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next()
 
-            this.password = await bcrypt.hash(this.password,10)
-            next()
-    })
+    this.password = await bcrypt.hash(this.password, 10)
+    next()
+})
 
-    userSchema.methods.isPasswordCorrect = async function(password){
-        return await bcrypt.compare(password, this.password)
-    }
+// Password Compare
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password)
+}
 
-    userSchema.methods.generateAccessToken = function () {
-        return jwt.sign(
-            {
-                _id: this._id,
-                username: this.username,
-                mobile: this.mobile,
-            },
-            process.env.ACCESS_TOKEN_SECRET,
-            {
-                expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-            }
-        )
-    }
+// Access Token Generate Function
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+            username: this.username,
+            email: this.email
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
 
-    userSchema.methods.generateRefreshToken = function () {
-        return jwt.sign(
-            {
-                _id: this._id,
-            },
-            process.env.REFRESH_TOKEN_SECRET,
-            {
-                expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-            }
-        )
-    }
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+}
 
-    export const User = mongoose.model("User", userSchema)
+export const User = mongoose.model("User", userSchema)

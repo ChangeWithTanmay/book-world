@@ -5,5 +5,4 @@ const router = Router();
 
 router.route("/register").post(registerPatient);
 
-
-export default router
+export default router;

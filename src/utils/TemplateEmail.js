@@ -1,4 +1,4 @@
-export const TemplateEmail =(otp) => `
+export const TemplateEmail = (otp) => `
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; border-radius: 8px; background-color: #ffffff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
     <div style="font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; margin-bottom: 20px;">
         DOCTOR.<br>GO
@@ -23,4 +23,4 @@ export const TemplateEmail =(otp) => `
             <img src="https://i.pinimg.com/236x/68/8f/48/688f48f357a41ed19f24b79cd3aa4721.jpg" alt="Facebook" style="width: 24px; height: 24px;">
         </a>
     </div>
-</div>`
+</div>`;
